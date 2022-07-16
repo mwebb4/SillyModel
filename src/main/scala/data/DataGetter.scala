@@ -1,4 +1,5 @@
 package data
+//import spark.implicits._
 
 object DataGetter {
 
@@ -10,11 +11,10 @@ object DataGetter {
 
   }
 
-  def main(url: String): String = {
+  def parseResponse(resp: requests.Response): Unit = {
 
-    val resp = requests.get(url)
+    // val df = spark.read.json(Seq(resp.text).toDS)
 
-    return resp.text
   }
 
 }
