@@ -1,12 +1,11 @@
 import org.scalatest.funsuite.{AnyFunSuite}
 import model.Model
 
-class Fixture {
-  val trainArgs = Array("foo", "bar")
-  val scoreArgs = Array("lok", "tar")
-}
-
 class ModelSuite extends AnyFunSuite {
+  class Fixture {
+    val trainArgs = Array("foo", "bar")
+    val scoreArgs = Array("lok", "tar")
+  }
 
   def fixture = new Fixture
 

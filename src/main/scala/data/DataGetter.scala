@@ -1,7 +1,13 @@
 package data
-//import spark.implicits._
+import org.apache.spark.sql.{SparkSession, DataFrame}
+import org.apache.spark.sql.Dataset
 
 object DataGetter {
+
+  val spark = SparkSession
+    .builder()
+    .master("local[*]")
+    .getOrCreate()
 
   def getData(url: String): requests.Response = {
 
@@ -11,9 +17,13 @@ object DataGetter {
 
   }
 
-  def parseResponse(resp: requests.Response): Unit = {
+  def parseResponse(resp: requests.Response): DataFrame = {
 
-    // val df = spark.read.json(Seq(resp.text).toDS)
+    val jsonRdd = spark.sparkContext.parallelize(resp.text :: Nil)
+
+    val df = spark.read.json(jsonRdd)
+
+    df
 
   }
 

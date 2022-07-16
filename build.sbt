@@ -12,5 +12,8 @@ lazy val demoModel = (project in file("."))
     name := "SillyDemoModel",
     libraryDependencies += "com.typesafe.play" %% "play-json" % "2.9.2",
     libraryDependencies += "com.lihaoyi" %% "requests" % "0.7.0",
+    libraryDependencies += "org.apache.spark" % "spark-core_2.12" % "3.3.0",
+    libraryDependencies += "org.apache.spark" % "spark-mllib_2.12" % "3.3.0",
+    libraryDependencies += "org.apache.spark" %% "spark-sql" % "3.3.0",
     libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.7" % Test
   )
