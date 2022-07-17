@@ -8,6 +8,9 @@ import model.Model
 
 object Main extends LazyLogging {
 
+  val featureCols = Array("x_0", "x_1", "x_2", "x_3", "x_4")
+  val targetCol = "y"
+
   def main(args: Array[String]): Unit = {
 
     logger.info("Parsing arguments...")
@@ -17,11 +20,11 @@ object Main extends LazyLogging {
     val spark = SparkSessionFactory.getSpark()
 
     logger.info("Fetching data...")
-    val dg = new DataGetter(spark)
-    val df = dg.getData(conf.url.getOrElse("whoops"))
+    val dg = new DataGetter(spark, featureCols, targetCol)
+    val df = dg.getData(conf.datapath.getOrElse("whoops"))
 
     logger.info("Training Model...")
-    val model = new Model(spark)
+    val model = new Model(spark, featureCols, targetCol)
     val Array(trainData, testData) = model.train_test_split(df)
     model.train(trainData)
 

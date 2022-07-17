@@ -6,7 +6,8 @@ import org.apache.spark.ml.regression.LinearRegression
 import org.apache.spark.ml.evaluation.RegressionEvaluator
 import org.apache.spark.ml.tuning.{ParamGridBuilder, TrainValidationSplit}
 
-class Model(spark: SparkSession) extends LazyLogging {
+class Model(spark: SparkSession, featureCols: Array[String], targetCol: String)
+    extends LazyLogging {
 
   def train_test_split(data: DataFrame): Array[DataFrame] = {
 

@@ -1,19 +1,41 @@
 package data
 import org.apache.spark.sql.{SparkSession, DataFrame}
+import org.apache.spark.ml.feature.VectorAssembler
 import com.typesafe.scalalogging.LazyLogging
 
-class DataGetter(spark: SparkSession) extends LazyLogging {
+class DataGetter(
+    spark: SparkSession,
+    featureCols: Array[String],
+    targetCol: String
+) extends LazyLogging {
 
-  def getData(url: String): DataFrame = {
-    logger.info("Fetching data...")
-    val resp = requests.get(url)
-    logger.info("Build Spark RDD...")
-    val jsonRdd = spark.sparkContext.parallelize(resp.text :: Nil)
+  def getData(dataPath: String): DataFrame = {
+
     logger.info("Build DataFrame...")
-    val df = spark.read.json(jsonRdd)
+    var df = spark.read
+      .format("csv")
+      .option("header", "true")
+      .option("inferSchema", "true")
+      .load(dataPath)
 
-    return df
+    df = this.assembleFeatures(df)
+
+    df.withColumnRenamed(this.targetCol, "label")
 
   }
 
+  private def convertDTypes(data: DataFrame): DataFrame = {
+    return data
+  }
+
+  private def assembleFeatures(data: DataFrame): DataFrame = {
+
+    val assembler = new VectorAssembler
+
+    assembler.setInputCols(this.featureCols)
+    assembler.setOutputCol("features")
+
+    assembler.transform(data)
+
+  }
 }

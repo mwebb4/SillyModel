@@ -10,7 +10,10 @@
       // full name of the class to run
       "mainClass": "main.Main",
       // optional arguments for the main class
-      "args": ["--url", "http://localhost:5000/data"],
+      "args": [
+        "--datapath",
+        "/home/marcus/Code/SillyModel/src/main/resources/data.csv"
+      ],
       // optional jvm properties to use
       "jvmOptions": []
     },
