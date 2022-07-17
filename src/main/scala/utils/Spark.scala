@@ -13,6 +13,8 @@ object SparkSessionFactory extends LazyLogging {
       .master("local[*]")
       .getOrCreate()
 
+    spark.sparkContext.setLogLevel("ERROR")
+
     spark
   }
 }

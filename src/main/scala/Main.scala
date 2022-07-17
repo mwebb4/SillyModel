@@ -21,7 +21,9 @@ object Main extends LazyLogging {
     val df = dg.getData(conf.url.getOrElse("whoops"))
 
     logger.info("Training Model...")
-    Model.train()
+    val model = new Model(spark)
+    val Array(trainData, testData) = model.train_test_split(df)
+    model.train(trainData)
 
   }
 }
