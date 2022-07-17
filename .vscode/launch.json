@@ -8,9 +8,9 @@
       // configuration name visible for the user
       "name": "Launch Main",
       // full name of the class to run
-      "mainClass": "com.example.Main",
+      "mainClass": "main.Main",
       // optional arguments for the main class
-      "args": [],
+      "args": ["--url", "http://localhost:5000/data"],
       // optional jvm properties to use
       "jvmOptions": []
     },

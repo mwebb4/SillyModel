@@ -1,29 +1,18 @@
 package data
 import org.apache.spark.sql.{SparkSession, DataFrame}
-import org.apache.spark.sql.Dataset
+import com.typesafe.scalalogging.LazyLogging
 
-object DataGetter {
+class DataGetter(spark: SparkSession) extends LazyLogging {
 
-  val spark = SparkSession
-    .builder()
-    .master("local[*]")
-    .getOrCreate()
-
-  def getData(url: String): requests.Response = {
-
+  def getData(url: String): DataFrame = {
+    logger.info("Fetching data...")
     val resp = requests.get(url)
-
-    return resp
-
-  }
-
-  def parseResponse(resp: requests.Response): DataFrame = {
-
+    logger.info("Build Spark RDD...")
     val jsonRdd = spark.sparkContext.parallelize(resp.text :: Nil)
-
+    logger.info("Build DataFrame...")
     val df = spark.read.json(jsonRdd)
 
-    df
+    return df
 
   }
 
