@@ -2,18 +2,27 @@ package model
 
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.spark.sql.{SparkSession, DataFrame}
-import org.apache.spark.ml.regression.LinearRegression
+import org.apache.spark.ml.regression.{
+  LinearRegressionModel,
+  LinearRegression,
+  LinearRegressionSummary
+}
 import org.apache.spark.ml.evaluation.RegressionEvaluator
-import org.apache.spark.ml.tuning.{ParamGridBuilder, TrainValidationSplit}
+import org.apache.spark.ml.tuning.{ParamGridBuilder, CrossValidator}
 
-class Model(spark: SparkSession, featureCols: Array[String], targetCol: String)
-    extends LazyLogging {
+class Model(
+    spark: SparkSession,
+    featureCols: Array[String],
+    targetCol: String
+) extends LazyLogging {
 
-  def train_test_split(data: DataFrame): Array[DataFrame] = {
+  def train_test_split(
+      data: DataFrame,
+      split: Array[Double] = Array(0.9, 0.1)
+  ): Array[DataFrame] = {
 
-    val splitData = data.randomSplit(Array(0.9, 0.1), seed = 12345)
+    data.randomSplit(split, seed = 12345)
 
-    splitData
   }
 
   def train(data: DataFrame): Unit = {
@@ -29,17 +38,28 @@ class Model(spark: SparkSession, featureCols: Array[String], targetCol: String)
       .addGrid(lr.elasticNetParam, Array(0.0, 0.5, 1.0))
       .build()
 
-    val trainValidationSplit = new TrainValidationSplit()
+    val cv = new CrossValidator()
       .setEstimator(lr)
       .setEvaluator(new RegressionEvaluator)
       .setEstimatorParamMaps(paramGrid)
-      // 80% of the data will be used for training and the remaining 20% for validation.
-      .setTrainRatio(0.8)
-      // Evaluate up to 2 parameter settings in parallel
-      .setParallelism(2)
+      .setNumFolds(2) // Use 3+ in practice
+      .setParallelism(2) // Evaluate up to 2 parameter settings in parallel
 
     // Run train validation split, and choose the best set of parameters.
-    val model = trainValidationSplit.fit(data)
+    val model = cv.fit(data)
+
+    logger.info("Model successfully trained!")
+
+    // Get Best Model and Training Metricss
+    val lrModel = model.bestModel.asInstanceOf[LinearRegressionModel]
+    val summary = lrModel.summary.asInstanceOf[LinearRegressionSummary]
+
+    println("Model trained! Training data fit statistics:")
+    println(s"R2adj: ${summary.r2adj}")
+    println(s"RMSE: ${summary.rootMeanSquaredError}")
+    println(s"MAE: ${summary.meanAbsoluteError}")
+    println(s"Coefficients: ${lrModel.coefficients}")
+    println(s"Intercept: ${lrModel.intercept}")
 
   }
 
