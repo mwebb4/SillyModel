@@ -22,11 +22,11 @@ object Main extends LazyLogging {
     logger.info("Fetching data...")
     val dg =
       new DataGetter(spark, features, target)
-    val df = dg.getData(conf.datapath.getOrElse(""))
+    val df = dg.getData(dataPath)
 
     logger.info("Training Model...")
     val model =
-      new Model(spark, conf.features.getOrElse("").split(","), target)
+      new Model(spark, features, target)
     val Array(trainData, testData) = model.train_test_split(df)
     model.train(trainData)
 
