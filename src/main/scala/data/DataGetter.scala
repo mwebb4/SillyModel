@@ -21,7 +21,6 @@ class DataGetter(
     df = this.assembleFeatures(df)
 
     df.withColumnRenamed(this.targetCol, "label")
-
   }
 
   private def convertDTypes(data: DataFrame): DataFrame = {

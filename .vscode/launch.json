@@ -12,7 +12,11 @@
       // optional arguments for the main class
       "args": [
         "--datapath",
-        "/home/marcus/Code/SillyModel/src/main/resources/data.csv"
+        "./src/main/resources/data.csv",
+        "--features",
+        "x_0,x_1,x_2,x_3,x_4",
+        "--target",
+        "y"
       ],
       // optional jvm properties to use
       "jvmOptions": []
