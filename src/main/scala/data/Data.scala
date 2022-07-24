@@ -3,7 +3,7 @@ import org.apache.spark.sql.{SparkSession, DataFrame}
 import org.apache.spark.ml.feature.VectorAssembler
 import com.typesafe.scalalogging.LazyLogging
 
-class DataGetter(
+class DataLoader(
     spark: SparkSession,
     featureCols: Array[String],
     targetCol: String
@@ -21,6 +21,15 @@ class DataGetter(
     df = this.assembleFeatures(df)
 
     df.withColumnRenamed(this.targetCol, "label")
+  }
+
+  def train_test_split(
+      data: DataFrame,
+      split: Array[Double] = Array(0.9, 0.1)
+  ): Array[DataFrame] = {
+
+    data.randomSplit(split, seed = 12345)
+
   }
 
   private def convertDTypes(data: DataFrame): DataFrame = {

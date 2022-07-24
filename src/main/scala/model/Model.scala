@@ -16,14 +16,8 @@ class Model(
     targetCol: String
 ) extends LazyLogging {
 
-  def train_test_split(
-      data: DataFrame,
-      split: Array[Double] = Array(0.9, 0.1)
-  ): Array[DataFrame] = {
-
-    data.randomSplit(split, seed = 12345)
-
-  }
+  var model = new LinearRegression().asInstanceOf[LinearRegressionModel]
+  var trainSummary = model.summary.asInstanceOf[LinearRegressionSummary]
 
   def train(
       data: DataFrame
@@ -31,7 +25,7 @@ class Model(
 
     logger.info("Train Model Called...")
 
-    val lr = new LinearRegression()
+    var lr = new LinearRegression()
       .setMaxIter(10)
 
     val paramGrid = new ParamGridBuilder()
@@ -48,18 +42,18 @@ class Model(
       .setParallelism(2) // Evaluate up to 2 parameter settings in parallel
 
     // Run train validation split, and choose the best set of parameters.
-    val model = cv.fit(data)
+    val cv_res = cv.fit(data)
 
     logger.info("Model successfully trained!")
 
     // Get Best Model and Training Metricss
-    val lrModel = model.bestModel.asInstanceOf[LinearRegressionModel]
-    val summary = lrModel.summary.asInstanceOf[LinearRegressionSummary]
+    val bestModel = cv_res.bestModel.asInstanceOf[LinearRegressionModel]
+    val summary = bestModel.summary.asInstanceOf[LinearRegressionSummary]
 
-    return (lrModel, summary)
+    this.model = bestModel
+    this.trainSummary = summary
+
+    return (bestModel, summary)
   }
 
-  def score(): Unit = {
-    logger.info("Score Model Called...")
-  }
 }

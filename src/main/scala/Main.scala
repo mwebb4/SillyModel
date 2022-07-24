@@ -3,7 +3,7 @@ package main
 import utils.config.Config
 import com.typesafe.scalalogging.LazyLogging
 import utils.spark.SparkSessionFactory
-import data.DataGetter
+import data.DataLoader
 import model.Model
 
 object Main extends LazyLogging {
@@ -21,13 +21,14 @@ object Main extends LazyLogging {
 
     logger.info("Fetching data...")
     val dg =
-      new DataGetter(spark, features, target)
+      new DataLoader(spark, features, target)
     val df = dg.getData(dataPath)
 
     logger.info("Training Model...")
     val model =
       new Model(spark, features, target)
-    val Array(trainData, testData) = model.train_test_split(df)
+
+    val Array(trainData, testData) = dg.train_test_split(df)
     val (bestModel, summary) = model.train(trainData)
 
     println("Model trained! Training data fit statistics:")
