@@ -40,4 +40,3 @@ gcloud dataproc jobs submit spark \
     --features=$FEATURE_NAMES \
     --target=$TARGET_VAR_NAME
 
-# Need to add args to submit spark
