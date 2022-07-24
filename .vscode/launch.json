@@ -16,7 +16,8 @@
         "--features",
         "x_0,x_1,x_2,x_3,x_4",
         "--target",
-        "y"
+        "y",
+        "--local"
       ],
       // optional jvm properties to use
       "jvmOptions": []

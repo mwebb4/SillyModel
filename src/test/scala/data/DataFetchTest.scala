@@ -1,5 +1,5 @@
 import org.scalatest.funsuite._
-import data.DataGetter
+import data.DataLoader
 import utils.spark.SparkSessionFactory
 
 class DataSuite extends AnyFunSuite {
@@ -16,7 +16,7 @@ class DataSuite extends AnyFunSuite {
   test("Basic Spark DF") {
 
     val f = fixture
-    val dg = new DataGetter(
+    val dg = new DataLoader(
       spark = f.spark,
       featureCols = f.featureCols,
       targetCol = f.targetCol

@@ -5,6 +5,7 @@ import com.typesafe.scalalogging.LazyLogging
 import utils.spark.SparkSessionFactory
 import data.DataLoader
 import model.Model
+import org.apache.spark.ml.evaluation.RegressionEvaluator
 
 object Main extends LazyLogging {
 
@@ -15,9 +16,10 @@ object Main extends LazyLogging {
     val dataPath = conf.datapath.getOrElse("")
     val features = conf.features.getOrElse("").split(",")
     val target = conf.target.getOrElse("")
+    val isLocal = conf.local.getOrElse(false)
 
     logger.info("Configuring Spark...")
-    val spark = SparkSessionFactory.getSpark()
+    val spark = SparkSessionFactory.getSpark(local = isLocal)
 
     logger.info("Fetching data...")
     val dg =
@@ -28,15 +30,26 @@ object Main extends LazyLogging {
     val model =
       new Model(spark, features, target)
 
-    val Array(trainData, testData) = dg.train_test_split(df)
+    var Array(trainData, testData) = dg.train_test_split(df)
     val (bestModel, summary) = model.train(trainData)
 
-    println("Model trained! Training data fit statistics:")
-    println(s"R2adj: ${summary.r2adj}")
-    println(s"RMSE: ${summary.rootMeanSquaredError}")
-    println(s"MAE: ${summary.meanAbsoluteError}")
-    println(s"Coefficients: ${bestModel.coefficients}")
-    println(s"Intercept: ${bestModel.intercept}")
+    logger.info("Model trained! Training data fit statistics:")
+    logger.info(s"R2adj: ${summary.r2adj}")
+    logger.info(s"RMSE: ${summary.rootMeanSquaredError}")
+    logger.info(s"MAE: ${summary.meanAbsoluteError}")
+    logger.info(s"Coefficients: ${bestModel.coefficients}")
+    logger.info(s"p-values: ${summary.pValues}")
+    logger.info(s"Intercept: ${bestModel.intercept}")
+
+    logger.info("Assessing Test set performance...")
+
+    val testPreds = bestModel.transform(testData)
+
+    val eval = new RegressionEvaluator()
+      .setLabelCol("label")
+      .setPredictionCol("prediction")
+      .setMetricName("r2adj")
+      .evaluate(testPreds)
 
   }
 }

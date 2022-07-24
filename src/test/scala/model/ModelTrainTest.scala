@@ -1,7 +1,7 @@
 import org.scalatest.funsuite.{AnyFunSuite}
 import model.Model
 import utils.spark.SparkSessionFactory
-import data.DataGetter
+import data.DataLoader
 
 class ModelSuite extends AnyFunSuite {
   class Fixture {
@@ -9,7 +9,7 @@ class ModelSuite extends AnyFunSuite {
     val dataPath = getClass.getResource("/data.csv").getPath
     val featureCols = Array("x_0", "x_1", "x_2", "x_3", "x_4")
     val targetCol = "y"
-    val dg = new DataGetter(spark, featureCols, targetCol)
+    val dg = new DataLoader(spark, featureCols, targetCol)
     var df = dg.getData(dataPath)
   }
 
