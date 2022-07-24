@@ -9,13 +9,16 @@ FAT_JAR_LOCAL_PATH="./target/scala-2.12/$FAT_JAR_NAME.jar"
 MODEL_NAME="SillyDemoModel"
 MAIN_CLASS="main.Main"
 FAT_JAR_URI="gs://$SCRIPT_BUCKET/$MODEL_NAME/$FAT_JAR_NAME.jar"
+DATA_URI="gs://$DATA_BUCKET/data.csv"
+FEATURE_NAMES="x_0,x_1,x_2,x_3,x_4"
+TARGET_VAR_NAME="y"
 
-# Check exists
+echo "Checking for previous jar in bucket..."
 gsutil -q stat $FAT_JAR_URI
 status=$?
 
 if [[ $status == 0 ]]; then
-  echo "Previous jar file found. Removing..."
+  echo "Previous jar file found."
   gsutil rm $FAT_JAR_URI
 else
   echo "No previous version found."
@@ -31,6 +34,10 @@ gcloud dataproc jobs submit spark \
     --class=$MAIN_CLASS \
     --jars=$FAT_JAR_URI \
     --region=$REGION \
-    --project=$PROJECT_ID
+    --project=$PROJECT_ID \
+    -- \
+    --datapath=$DATA_URI \
+    --features=$FEATURE_NAMES \
+    --target=$TARGET_VAR_NAME
 
 # Need to add args to submit spark
