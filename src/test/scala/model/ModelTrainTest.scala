@@ -1,10 +1,16 @@
 import org.scalatest.funsuite.{AnyFunSuite}
 import model.Model
+import utils.spark.SparkSessionFactory
+import data.DataGetter
 
 class ModelSuite extends AnyFunSuite {
   class Fixture {
-    val trainArgs = Array("foo", "bar")
-    val scoreArgs = Array("lok", "tar")
+    val spark = SparkSessionFactory.getSpark(local = true)
+    val dataPath = getClass.getResource("/data.csv").getPath
+    val featureCols = Array("x_0", "x_1", "x_2", "x_3", "x_4")
+    val targetCol = "y"
+    val dg = new DataGetter(spark, featureCols, targetCol)
+    var df = dg.getData(dataPath)
   }
 
   def fixture = new Fixture
@@ -12,20 +18,15 @@ class ModelSuite extends AnyFunSuite {
   test("Train test") {
 
     val f = fixture
+    val model = new Model(
+      spark = f.spark,
+      featureCols = f.featureCols,
+      targetCol = f.targetCol
+    )
 
-    Model.train(f.trainArgs)
+    val (bestModel, summary) = model.train(f.df)
 
-    assert(true)
-
-  }
-
-  test("Score test") {
-
-    val f = fixture
-
-    Model.score(f.trainArgs)
-
-    assert(true)
+    assert(summary.r2adj > 0.5)
 
   }
 }

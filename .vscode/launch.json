@@ -12,7 +12,7 @@
       // optional arguments for the main class
       "args": [
         "--datapath",
-        "./src/main/resources/data.csv",
+        "https://storage.cloud.google.com/arctic-pad-default/data.csv",
         "--features",
         "x_0,x_1,x_2,x_3,x_4",
         "--target",

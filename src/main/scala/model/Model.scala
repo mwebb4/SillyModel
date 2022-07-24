@@ -25,7 +25,9 @@ class Model(
 
   }
 
-  def train(data: DataFrame): Unit = {
+  def train(
+      data: DataFrame
+  ): (LinearRegressionModel, LinearRegressionSummary) = {
 
     logger.info("Train Model Called...")
 
@@ -54,13 +56,7 @@ class Model(
     val lrModel = model.bestModel.asInstanceOf[LinearRegressionModel]
     val summary = lrModel.summary.asInstanceOf[LinearRegressionSummary]
 
-    println("Model trained! Training data fit statistics:")
-    println(s"R2adj: ${summary.r2adj}")
-    println(s"RMSE: ${summary.rootMeanSquaredError}")
-    println(s"MAE: ${summary.meanAbsoluteError}")
-    println(s"Coefficients: ${lrModel.coefficients}")
-    println(s"Intercept: ${lrModel.intercept}")
-
+    return (lrModel, summary)
   }
 
   def score(): Unit = {

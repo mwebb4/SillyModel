@@ -1,30 +1,31 @@
 import org.scalatest.funsuite._
 import data.DataGetter
-import javax.xml.crypto.Data
+import utils.spark.SparkSessionFactory
 
 class DataSuite extends AnyFunSuite {
 
   class Fixture {
-    val localUrl = "http://localhost:5000/"
+    val spark = SparkSessionFactory.getSpark(local = true)
+    val dataPath = getClass.getResource("/data.csv").getPath
+    val featureCols = Array("x_0", "x_1", "x_2", "x_3", "x_4")
+    val targetCol = "y"
   }
 
   def fixture = new Fixture
 
-  test("Basic Connectivity") {
+  test("Basic Spark DF") {
 
     val f = fixture
-    val resp = DataGetter.getData(f.localUrl)
+    val dg = new DataGetter(
+      spark = f.spark,
+      featureCols = f.featureCols,
+      targetCol = f.targetCol
+    )
+    val df = dg.getData(f.dataPath)
 
-    println(resp.text)
+    df.printSchema()
 
-    assert(resp.statusCode == 200)
-  }
-
-  test("Load Data") {
-
-    val f = fixture
-    val resp = DataGetter.getData(f.localUrl + "users")
-    val df = DataGetter.parseResponse(resp)
-
+    assert(df.columns contains "features")
+    assert(df.columns contains "label")
   }
 }

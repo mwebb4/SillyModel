@@ -5,17 +5,25 @@ import org.apache.spark.sql.SparkSession
 
 object SparkSessionFactory extends LazyLogging {
 
-  def getSpark(): SparkSession = {
+  def getSpark(
+      local: Boolean = false,
+      appName: String = "LinRegSilly"
+  ): SparkSession = {
 
     logger.info("Building SparkSession...")
-    val spark = SparkSession
-      .builder()
-      .appName("LinRegSillyModel")
-      .master("local[*]")
-      .getOrCreate()
+    val spark = if (local) {
+      SparkSession
+        .builder()
+        .appName(appName)
+        .master("local[*]")
+        .getOrCreate()
 
-    spark.sparkContext.setLogLevel("ERROR")
-
+    } else {
+      SparkSession
+        .builder()
+        .appName(appName)
+        .getOrCreate()
+    }
     spark
   }
 }

@@ -28,7 +28,14 @@ object Main extends LazyLogging {
     val model =
       new Model(spark, features, target)
     val Array(trainData, testData) = model.train_test_split(df)
-    model.train(trainData)
+    val (bestModel, summary) = model.train(trainData)
+
+    println("Model trained! Training data fit statistics:")
+    println(s"R2adj: ${summary.r2adj}")
+    println(s"RMSE: ${summary.rootMeanSquaredError}")
+    println(s"MAE: ${summary.meanAbsoluteError}")
+    println(s"Coefficients: ${bestModel.coefficients}")
+    println(s"Intercept: ${bestModel.intercept}")
 
   }
 }
