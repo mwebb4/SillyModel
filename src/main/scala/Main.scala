@@ -50,7 +50,7 @@ object Main extends LazyLogging {
 
     val r2Test = evaluator.setMetricName("r2").evaluate(testPreds)
 
-    logger.info(s"Test set:\n R2adj:\t ${r2Test}\n ExVar: \t ${rmseTest}")
+    logger.info(s"Test set:\n R2adj:\t${r2Test}\n ExVar:\t${rmseTest}")
 
   }
 }
