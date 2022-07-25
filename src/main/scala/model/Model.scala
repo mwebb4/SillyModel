@@ -10,14 +10,11 @@ import org.apache.spark.ml.regression.{
 import org.apache.spark.ml.evaluation.RegressionEvaluator
 import org.apache.spark.ml.tuning.{ParamGridBuilder, CrossValidator}
 
-class Model(
+class Trainer(
     spark: SparkSession,
     featureCols: Array[String],
     targetCol: String
 ) extends LazyLogging {
-
-  var model = new LinearRegression().asInstanceOf[LinearRegressionModel]
-  var trainSummary = model.summary.asInstanceOf[LinearRegressionSummary]
 
   def train(
       data: DataFrame
@@ -49,9 +46,6 @@ class Model(
     // Get Best Model and Training Metricss
     val bestModel = cv_res.bestModel.asInstanceOf[LinearRegressionModel]
     val summary = bestModel.summary.asInstanceOf[LinearRegressionSummary]
-
-    this.model = bestModel
-    this.trainSummary = summary
 
     return (bestModel, summary)
   }

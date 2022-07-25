@@ -12,7 +12,7 @@
       // optional arguments for the main class
       "args": [
         "--datapath",
-        "gs://arctic-pad-default/data.csv",
+        "src/test/resources/data.csv",
         "--features",
         "x_0,x_1,x_2,x_3,x_4",
         "--target",
